@@ -20,10 +20,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
     
-    //let menu = SKSpriteNode(imageNamed: "backgroundMenu")
-    
-    //let sky = SKSpriteNode(imageNamed: "backgroundSky1")
-    
     
     var scoreLabel: SKLabelNode!
     var playerShields = 20
@@ -33,21 +29,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
+        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky0")
+        backgroundImage.anchorPoint = CGPointMake(0.5, 0.5)
+        backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
+        backgroundImage.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+        self.addChild(backgroundImage)
+        
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
-        
-        //print(backgrounds)
-        
-        //gamescene auslesen
-        let gamesceneTypes = Bundle.main.decode([GameSceneType].self, from: "gamescene-types.json")
-        let gamescene = GameSceneNode(type: gamesceneTypes[1])
-        
-        gamescene.anchorPoint = CGPointMake(0.5, 0.5)
-        gamescene.size.height = self.size.height
-        gamescene.size.width = self.size.width
-        gamescene.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
-        gamescene.zPosition = 0
-        addChild(gamescene)
         
     
         if let particles = SKEmitterNode(fileNamed: "Starfield"){
@@ -184,8 +173,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 print("playerShields at 0 and GamerOver")
                 
                 // Alert the GameScene:
-                
-                
                 fatalError("backto menu load a menu ")
                 //Button zum Menu einbauen
                //Funktion aufrufen zum Menubild

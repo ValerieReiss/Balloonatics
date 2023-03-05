@@ -15,7 +15,7 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
  
-        if let view = self.view as! SKView? {
+        /*if let view = self.view as! SKView? {
             if let scene = SKScene(fileNamed: "GameScene") {
                 scene.size = self.view.bounds.size
                 //scene.scaleMode = .aspectFill
@@ -27,7 +27,7 @@ class GameViewController: UIViewController {
             view.showsFPS = true
             view.showsNodeCount = true
             view.showsPhysics = true
-        }
+        }*/
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
