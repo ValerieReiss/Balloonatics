@@ -11,14 +11,22 @@ import GameplayKit
 
 class GameScene11: SKScene, SKPhysicsContactDelegate {
     
+    class func newGameScene() -> GameScene11 {
+        guard let scene = SKScene(fileNamed: "GameScene11") as? GameScene11 else {
+            print("Failed to load GameScene11.sks")
+            abort()
+        }
+        scene.scaleMode = .aspectFill
+        return scene
+    }
+    
     let motionManager = CMMotionManager()
     let player = SKSpriteNode(imageNamed: "player")
     
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
     
     var scoreLabel: SKLabelNode!
-    var playerShields = 20
-    //{didSet {scoreLabel.text = "Score: \(playerShields)"}}
+    var playerShields = 10
 
     let positions = Array(stride(from: -420, through:420, by: 80))
     
@@ -33,28 +41,30 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
     
-        if let particles = SKEmitterNode(fileNamed: "Starfield"){
+        /*if let particles = SKEmitterNode(fileNamed: "Starfield"){
             particles.position = CGPoint (x: 1300, y: 0)
             particles.advanceSimulationTime(60)
             particles.zPosition = 1
             addChild(particles)
-        }
+        }*/
         
         //playerShields Score anzeigen auf Screen
-            scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
-            scoreLabel.text = "Score:"
-            let scoreImage = SKSpriteNode(imageNamed: "heart.jpg")
-            scoreLabel.horizontalAlignmentMode = .left
-            scoreLabel.position = CGPoint(x: -400, y: 150)
-            scoreImage.position = CGPoint(x: -200, y: 150)
-            scoreLabel.zPosition = 1
-            addChild(scoreLabel)
-            addChild(scoreImage)
-
+        let scoreImage = SKSpriteNode(imageNamed: "heart.jpg")
+        scoreImage.position = CGPoint(x: -200, y: 150)
+        scoreImage.zPosition = 1
+        addChild(scoreImage)
+        
+        scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
+        scoreLabel.horizontalAlignmentMode = .left
+        scoreLabel.position = CGPoint(x: -300, y: 150)
+        scoreLabel.zPosition = 1
+        addChild(scoreLabel)
+    
         player.name = "player"
-        player.position.x = frame.minX + 200
-        //player.size.height = frame.height/5
-        //player.size.width = frame.height/9
+        player.anchorPoint = CGPointMake(0.5, 0.5)
+        player.position.x = frame.minX + 50
+        player.position.y = frame.minY/2
+        player.setScale(1)
         player.zPosition = 1
         addChild(player)
         
@@ -84,58 +94,48 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-            let activeEnemies = children.compactMap { $0 as? EnemyNode}
-            if activeEnemies.isEmpty {
-                if playerShields != 0  {
-                    var zahl = 0
-                    while zahl < 10 {
-                        print ("zahl, \(zahl)")
-                        zahl += 1
-                        createObstacles()
-                        print("child added, \(zahl)")
-                    }
+        if playerShields > 0 {
+            var zahl = 0
+            while zahl < 10 {
+                zahl += 1
+                print("Before delay")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    print("Async after 2 seconds")
                 }
+                createObstacles()
             }
-        
+        } else {
+            gameOver()
+        }
     }
     
     func createObstacles() {
-        
         let enemyType = Int.random(in: 0..<3)
-        //nachladung 100 punkte hinter dem screen
-        let enemyOffsetX: CGFloat = 100
-        let enemyStartX = 500
+        //let enemyOffsetX: CGFloat = 400
+        let enemyStartX = 1000
+        let enemyStartY = Int.random(in: 0..<50)
         
-        for(index, position) in positions.shuffled().enumerated()
+        let enemy = EnemyNode(type: enemyTypes[enemyType], startPosition: CGPoint(x: enemyStartX, y: enemyStartY), /*xOffset: enemyOffsetX,*/ moveStraight: true)
+        addChild(enemy)
+        
+        /*for(index, position) in positions.shuffled().enumerated()
             {
                 let enemy = EnemyNode(type: enemyTypes[enemyType], startPosition: CGPoint(x: enemyStartX, y: position), xOffset: enemyOffsetX * CGFloat(index * 2), moveStraight: true)
                 addChild(enemy)
                 break
-            }
+            }*/
         print("obstacle created")
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        /*for touch in (touches as! Set<UITouch>) {
+        for touch in (touches) {
             let location = touch.location(in: self)
             let nodeTouched = atPoint(location)
-
-               // Check for HUD buttons:
-               if nodeTouched.name == "restartGame" {
-                   // Transition to a new version of the GameScene
-                   // to restart the game:
-                   self.view?.presentScene(
-                       GameScene(size: self.size),
-                       transition: .crossFade(withDuration: 0.6))
-               }
-               else if nodeTouched.name == "returnToMenu" {
-                   // Transition to the main menu scene:
-                   self.view?.presentScene(
-                       MenuScene(size: self.size),
-                       transition: .crossFade(withDuration: 0.6))
-               }
-           }*/
+                    if nodeTouched.name == "returnToMenu" {
+                        self.view?.presentScene(MenuScene(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    }
+           }
     }
     
     func didBegin(_ contact: SKPhysicsContact){
@@ -147,26 +147,19 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
                 explosion.position = nodeA.position
                 addChild(explosion)
             }
-            print("my Hearts are at \(playerShields) ")
-            
             playerShields -= 1
-            scoreLabel.text = "Score: \(playerShields)"
+            scoreLabel.text = "\(playerShields)"
             nodeB.removeFromParent()
             
             if playerShields == 0 {
-                let tod = SKSpriteNode(imageNamed: "gameOver")
+                let tod = SKSpriteNode(imageNamed: "Jo Sad")
                 tod.position.x = frame.minX + 100
                 addChild(tod)
                 
                 gameOver()
                 nodeA.removeFromParent()
-                
-                print("playerShields at 0 and GamerOver")
-                
-                // Alert the GameScene:
-                fatalError("backto menu load a menu ")
-                //Button zum Menu einbauen
-               //Funktion aufrufen zum Menubild
+                nodeB.removeFromParent()
+                print("Tod 2")
                 
             } else {
                 print("returned weil score != 0 gewesen")
@@ -187,7 +180,30 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
     func gameOver() {
         // Show the restart and main menu buttons:
         print("gameover funktion aufrufen")
-        //extra.showButtons()
+        player.removeFromParent()
+        let jo2 = SKSpriteNode(imageNamed: "JO2.png")
+        jo2.setScale(1)
+        jo2.zPosition = 2
+        jo2.position = CGPoint(x: 100, y: 100)
+        self.addChild(jo2)
+        
+        let rotateAction = SKAction.sequence ([
+            SKAction.rotate(toAngle: 0.2, duration: 0.2),
+            SKAction.rotate(toAngle: -0.2, duration: 0.2)])
+        jo2.run(SKAction.repeatForever(rotateAction))
+        
+        let gomenuButton = SKSpriteNode(imageNamed: "menuClown.jpg")
+        gomenuButton.name = "returnToMenu"
+        gomenuButton.position =
+        CGPoint(x: 500, y: 50)
+        gomenuButton.size = CGSize(width: 70, height: 100)
+        gomenuButton.zPosition = 2
+        gomenuButton.alpha = 0
+        self.addChild(gomenuButton)
+        let fadeAnimation =
+        SKAction.fadeAlpha(to: 1, duration: 1)
+        gomenuButton.run(fadeAnimation)
+        
     }
     
 }
