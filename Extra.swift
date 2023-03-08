@@ -16,7 +16,7 @@ class Extra: SKScene, SKPhysicsContactDelegate {
                                 y: 300)
     
     let restartButton = SKSpriteNode(imageNamed: "restartButton.jpg")
-    let gomenuButton = SKSpriteNode(imageNamed: "Button.jpg")
+    let gomenuButton = SKSpriteNode(imageNamed: "menuClown.jpg")
     
     override func didMove(to view: SKView) {
         

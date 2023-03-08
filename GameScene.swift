@@ -20,7 +20,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
     
-    
     var scoreLabel: SKLabelNode!
     var playerShields = 20
     //{didSet {scoreLabel.text = "Score: \(playerShields)"}}
@@ -29,7 +28,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
-        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky0")
+        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky5")
         backgroundImage.anchorPoint = CGPointMake(0.5, 0.5)
         backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
         backgroundImage.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
@@ -60,6 +59,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         player.name = "player"
         player.position.x = frame.minX + 200
+        player.setScale(1)
         //player.size.height = frame.height/5
         //player.size.width = frame.height/9
         player.zPosition = 1
@@ -90,10 +90,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-        
        
-            let activeEnemies = children.compactMap { $0 as? EnemyNode}
-            if activeEnemies.isEmpty {
+        let activeEnemies = children.compactMap { $0 as? EnemyNode}
+        if activeEnemies.isEmpty {
                 if playerShields != 0  {
                     var zahl = 0
                     while zahl < 10 {
@@ -103,14 +102,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         print("child added, \(zahl)")
                     }
                 }
-            }
-        
+        }
     }
     
     func createObstacles() {
-        
         let enemyType = Int.random(in: 0..<3)
-        //nachladung 100 punkte hinter dem screen
         let enemyOffsetX: CGFloat = 100
         let enemyStartX = 500
         
@@ -125,7 +121,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        /*for touch in (touches as! Set<UITouch>) {
+        for touch in (touches ) {
             let location = touch.location(in: self)
             let nodeTouched = atPoint(location)
 
@@ -143,7 +139,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                        MenuScene(size: self.size),
                        transition: .crossFade(withDuration: 0.6))
                }
-           }*/
+           }
         
     }
     

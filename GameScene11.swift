@@ -20,15 +20,21 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         return scene
     }
     
-    let motionManager = CMMotionManager()
-    let player = SKSpriteNode(imageNamed: "player")
-    
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
-    
     var scoreLabel: SKLabelNode!
     var playerShields = 10
+    let positions = Array(stride(from: -420, through:420, by: 10))
+    
 
-    let positions = Array(stride(from: -420, through:420, by: 80))
+    var lastUpdateTime:TimeInterval = 0
+    var dt:TimeInterval = 0
+    var player = Player()
+
+    var currentTouchPosition: CGPoint  = CGPointZero
+    var beginningTouchPosition:CGPoint = CGPointZero
+    var currentPlayerPosition: CGPoint = CGPointZero
+
+    var playableRectArea:CGRect = CGRectZero
     
     override func didMove(to view: SKView) {
         
@@ -36,111 +42,63 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         backgroundImage.anchorPoint = CGPointMake(0.5, 0.5)
         backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
         backgroundImage.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+        backgroundImage.zPosition = 0
         self.addChild(backgroundImage)
         
-        physicsWorld.gravity = .zero
+        scene?.physicsWorld.gravity = CGVectorMake(0, 0)
         physicsWorld.contactDelegate = self
     
-        /*if let particles = SKEmitterNode(fileNamed: "Starfield"){
-            particles.position = CGPoint (x: 1300, y: 0)
-            particles.advanceSimulationTime(60)
-            particles.zPosition = 1
-            addChild(particles)
-        }*/
-        
-        //playerShields Score anzeigen auf Screen
         let scoreImage = SKSpriteNode(imageNamed: "heart.jpg")
-        scoreImage.position = CGPoint(x: -200, y: 150)
-        scoreImage.zPosition = 1
+        scoreImage.position = CGPoint(x: CGRectGetMidX(self.frame)-230, y: CGRectGetMidY(self.frame)+150)
+        scoreImage.zPosition = 2
         addChild(scoreImage)
         
         scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
-        scoreLabel.horizontalAlignmentMode = .left
-        scoreLabel.position = CGPoint(x: -300, y: 150)
-        scoreLabel.zPosition = 1
+        //scoreLabel.horizontalAlignmentMode = .left
+        scoreLabel.position = CGPoint(x: CGRectGetMidX(self.frame)-250, y: CGRectGetMidY(self.frame)+150)
+        scoreLabel.zPosition = 2
         addChild(scoreLabel)
     
-        player.name = "player"
-        player.anchorPoint = CGPointMake(0.5, 0.5)
-        player.position.x = frame.minX + 50
-        player.position.y = frame.minY/2
-        player.setScale(1)
-        player.zPosition = 1
-        addChild(player)
+        scene?.physicsWorld.gravity = CGVectorMake(0, 0)
+        let maxAspectRatio:CGFloat = 16.0/9.0
+        let playableHeight = size.width / maxAspectRatio
+        let playableMargin = (size.height-playableHeight)/2.0
+        playableRectArea = CGRect(x: 0, y: playableMargin,
+                                      width: size.width,
+                                      height: playableHeight)
+        currentTouchPosition = CGPointZero
+        beginningTouchPosition = CGPointZero
+        currentPlayerPosition = CGPoint(x: CGRectGetMidX(self.frame)-200, y: CGRectGetMidY(self.frame))
         
-        player.physicsBody = SKPhysicsBody(texture: player.texture!, size: player.texture!.size())
-        player.physicsBody?.categoryBitMask = CollisionType.player.rawValue
-        player.physicsBody?.collisionBitMask = CollisionType.enemy.rawValue
-        player.physicsBody?.contactTestBitMask = CollisionType.enemy.rawValue
-        player.physicsBody?.isDynamic = false
-        
-        motionManager.startAccelerometerUpdates()
-    }
+        player.position = currentPlayerPosition
+        self.addChild(player)
     
-    override func update(_ currentTime: TimeInterval) {
-        if let accelerometerData = motionManager.accelerometerData{
-            player.position.y += CGFloat(accelerometerData.acceleration.x * 50)
-            if player.position.y < frame.minY {
-                player.position.y = frame.minY
-            } else if player.position.y > frame.maxY {
-                player.position.y = frame.maxY
-            }
-        }
-        for child in children {
-            if child.frame.maxX < 0 {
-                if !frame.intersects(child.frame){
-                    child.removeFromParent()
-                }
-            }
-        }
-        
-        if playerShields > 0 {
-            var zahl = 0
-            while zahl < 10 {
-                zahl += 1
-                print("Before delay")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    print("Async after 2 seconds")
-                }
-                createObstacles()
-            }
-        } else {
-            gameOver()
-        }
     }
     
     func createObstacles() {
         let enemyType = Int.random(in: 0..<3)
-        //let enemyOffsetX: CGFloat = 400
-        let enemyStartX = 1000
+        let enemyOffsetX: CGFloat = 400
+        let enemyStartX = 10
         let enemyStartY = Int.random(in: 0..<50)
         
-        let enemy = EnemyNode(type: enemyTypes[enemyType], startPosition: CGPoint(x: enemyStartX, y: enemyStartY), /*xOffset: enemyOffsetX,*/ moveStraight: true)
-        addChild(enemy)
-        
-        /*for(index, position) in positions.shuffled().enumerated()
+        for(index, position) in positions.shuffled().enumerated()
             {
                 let enemy = EnemyNode(type: enemyTypes[enemyType], startPosition: CGPoint(x: enemyStartX, y: position), xOffset: enemyOffsetX * CGFloat(index * 2), moveStraight: true)
                 addChild(enemy)
                 break
-            }*/
+            }
         print("obstacle created")
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch in (touches) {
-            let location = touch.location(in: self)
-            let nodeTouched = atPoint(location)
-                    if nodeTouched.name == "returnToMenu" {
-                        self.view?.presentScene(MenuScene(size: self.size),
-                       transition: .crossFade(withDuration: 2))
-                    }
-           }
     }
     
     func didBegin(_ contact: SKPhysicsContact){
         guard let nodeA = contact.bodyA.node else {return}
         guard let nodeB = contact.bodyB.node else {return}
+        
+        print("physic contact")
+        if let explosion = SKEmitterNode(fileNamed: "Explosion"){
+            explosion.position = nodeA.position
+            addChild(explosion)
+        }
         
         if nodeA.name == "player"{
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
@@ -167,13 +125,12 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
             }
             
         } else {
-            
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = nodeB.position
                 addChild(explosion)
             }
             nodeB.removeFromParent()
-            fatalError("else!!!! no nodeA  ")
+            print("hit object hehe")
         }
     }
     
@@ -203,7 +160,46 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         let fadeAnimation =
         SKAction.fadeAlpha(to: 1, duration: 1)
         gomenuButton.run(fadeAnimation)
-        
     }
     
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch: AnyObject in touches {
+            currentTouchPosition = touch.location(in:self)
+        }
+
+        let dxVectorValue = (-1) * (beginningTouchPosition.x - currentTouchPosition.x)
+        let dyVectorValue = (-1) * (beginningTouchPosition.y - currentTouchPosition.y)
+
+        player.movePlayerBy(dxVectorValue: 0, dyVectorValue: dyVectorValue, duration: dt)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        player.removeAllActions()
+        player.stopMoving()
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("touch")
+        for touch: AnyObject in touches {
+            beginningTouchPosition = touch.location(in:self)
+            currentTouchPosition = beginningTouchPosition
+        }
+    }
+
+    override func update(_ currentTime: CFTimeInterval) {
+        currentPlayerPosition = player.position
+
+        if lastUpdateTime > 0 {
+            dt = currentTime - lastUpdateTime
+        }else{
+            dt = 0
+        }
+        lastUpdateTime = currentTime
+
+        player.boundsCheckPlayer(playableArea: playableRectArea)
+        
+       
+        
+        
+    }
 }

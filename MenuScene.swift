@@ -20,19 +20,13 @@ class MenuScene: SKScene {
     }
     
     let label = SKSpriteNode(imageNamed: "Label")
-    let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky0")
+    let backgroundImage = SKSpriteNode(imageNamed: "backgroundMenu")
     
     override func didMove(to view: SKView) {
         backgroundImage.position = CGPointMake(self.size.width/2, self.size.height/2)
         backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
         backgroundImage.zPosition = -1
         self.addChild(backgroundImage)
-        
-        label.setScale(1)
-        //label.size = CGSize(width: self.size.width, height: self.size.height)
-        label.position = CGPoint(x: 350, y: 350)
-        label.zPosition = 1
-        self.addChild(label)
         
         let button1 = SKSpriteNode(imageNamed: "button1.jpg")
         button1.name = "button1"
@@ -131,7 +125,7 @@ class MenuScene: SKScene {
             let location = touch.location(in: self)
             let nodeTouched = atPoint(location)
                     if nodeTouched.name == "button12" {
-                        self.view?.presentScene(GameScene11(size: self.size),
+                        self.view?.presentScene(GameScene12(size: self.size),
                        transition: .crossFade(withDuration: 2))
                     } else if nodeTouched.name == "button5" {
                         self.view?.presentScene(GameScene(size: self.size),
@@ -139,7 +133,17 @@ class MenuScene: SKScene {
                     } else if nodeTouched.name == "button6" {
                         self.view?.presentScene(GameScene(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                    } else if nodeTouched.name == "button9" {
+                        self.view?.presentScene(GameScene(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    } else if nodeTouched.name == "button10" {
+                        self.view?.presentScene(GameScene10(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    } else if nodeTouched.name == "button11" {
+                        self.view?.presentScene(GameScene11(size: self.size),
+                       transition: .crossFade(withDuration: 2))
                     }
+            
            }
     }
 }

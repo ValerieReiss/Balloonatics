@@ -9,7 +9,6 @@ import SpriteKit
 
 class EnemyNode: SKSpriteNode {
     var type: EnemyType
-    //var shields: Int = 1
     
     init(type: EnemyType, startPosition: CGPoint, xOffset: CGFloat, moveStraight: Bool){
         self.type = type
@@ -23,7 +22,6 @@ class EnemyNode: SKSpriteNode {
         physicsBody?.contactTestBitMask = CollisionType.player.rawValue
         //name = "enemy"
         position = CGPoint(x: startPosition.x + xOffset, y: startPosition.y)
-        
         configureMovement(moveStraight)
     }
     
