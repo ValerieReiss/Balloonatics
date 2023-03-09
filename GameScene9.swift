@@ -1,19 +1,18 @@
 //
-//  GameScene12.swift
-//  Shooter
+//  GameScene9.swift
+//  Balloonatics
 //
-//  Created by Valerie on 08.03.23.
+//  Created by Valerie on 09.03.23.
 //
-
 import CoreMotion
 import SpriteKit
 import GameplayKit
 
-class GameScene12: SKScene, SKPhysicsContactDelegate {
+class GameScene9: SKScene, SKPhysicsContactDelegate {
     
-    class func newGameScene() -> GameScene12 {
-        guard let scene = SKScene(fileNamed: "GameScene12") as? GameScene12 else {
-            print("Failed to load GameScene12.sks")
+    class func newGameScene() -> GameScene9 {
+        guard let scene = SKScene(fileNamed: "GameScene9") as? GameScene9 else {
+            print("Failed to load GameScene9.sks")
             abort()
         }
         scene.scaleMode = .aspectFill
@@ -23,20 +22,20 @@ class GameScene12: SKScene, SKPhysicsContactDelegate {
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
     var scoreLabel: SKLabelNode!
     var playerShields = 10
-    
+
     var lastUpdateTime:TimeInterval = 0
     var dt:TimeInterval = 0
     var player = Player()
-    
+
     var currentTouchPosition: CGPoint  = CGPointZero
     var beginningTouchPosition:CGPoint = CGPointZero
     var currentPlayerPosition: CGPoint = CGPointZero
-    
+
     var playableRectArea:CGRect = CGRectZero
     
     override func didMove(to view: SKView) {
         
-        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky12")
+        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky9")
         backgroundImage.anchorPoint = CGPointMake(0.5, 0.5)
         backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
         backgroundImage.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
@@ -46,35 +45,36 @@ class GameScene12: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         
         navibar()
-        
+    
         scene?.physicsWorld.gravity = CGVectorMake(0, 0)
         
         let maxAspectRatio:CGFloat = 16.0/9.0
         let playableHeight = size.width / maxAspectRatio
         let playableMargin = (size.height-playableHeight)/2.0
         playableRectArea = CGRect(x: 0, y: playableMargin,
-                                  width: size.width,
-                                  height: playableHeight)
+                                      width: size.width,
+                                      height: playableHeight)
         currentTouchPosition = CGPointZero
         beginningTouchPosition = CGPointZero
         currentPlayerPosition = CGPoint(x: CGRectGetMidX(self.frame)-200, y: CGRectGetMidY(self.frame))
         
         player.position = currentPlayerPosition
         self.addChild(player)
-        
+    
     }
     
     func createObstacles() {
         let enemyType = Int.random(in: 0..<3)
         let enemyStartY = Int.random(in: 50..<300)
         let positions = Array(stride(from: -1000, through:1000, by: 2000))
-        
+
         for(index, _) in positions.shuffled().enumerated()
-        {
-            let enemy = EnemyNode(type: enemyTypes[enemyType], startPosition: CGPoint(x: 844, y: enemyStartY), xOffset: 100 * CGFloat(index * 6), moveStraight: true)
-            addChild(enemy)
-            break
-        }
+            {
+                let enemy = EnemyNode(type: enemyTypes[enemyType], startPosition: CGPoint(x: 844, y: enemyStartY), xOffset: 100 * CGFloat(index * 6), moveStraight: true)
+                addChild(enemy)
+                break
+            }
+        print("obstacle created")
     }
     
     func didBegin(_ contact: SKPhysicsContact){
@@ -100,7 +100,7 @@ class GameScene12: SKScene, SKPhysicsContactDelegate {
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = enemy.position
                 addChild(explosion)}
-            enemy.removeFromParent()
+                enemy.removeFromParent()
         } else {
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = secondNode.position
@@ -121,12 +121,12 @@ class GameScene12: SKScene, SKPhysicsContactDelegate {
         let dyVectorValue = (-1) * (beginningTouchPosition.y - currentTouchPosition.y)
         player.movePlayerBy(dxVectorValue: dxVectorValue, dyVectorValue: dyVectorValue, duration: dt)
     }
-    
+
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         player.removeAllActions()
         player.stopMoving()
     }
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         print("touch")
         for touch: AnyObject in touches {
@@ -134,7 +134,7 @@ class GameScene12: SKScene, SKPhysicsContactDelegate {
             currentTouchPosition = beginningTouchPosition
         }
     }
-    
+
     override func update(_ currentTime: CFTimeInterval) {
         scoreLabel.text = "\(playerShields)"
         currentPlayerPosition = player.position
@@ -151,7 +151,7 @@ class GameScene12: SKScene, SKPhysicsContactDelegate {
                 createObstacles()
                 
             } else if playerShields == 0 {
-                gameOver()
+                    gameOver()
             }
         }
         

@@ -1,8 +1,8 @@
 //
 //  Player.swift
-//  Shooter
+//  Balloonatics
 //
-//  Created by Valerie on 07.03.23.
+//  Created by Valerie on 08.03.23.
 //
 
 import Foundation
@@ -30,6 +30,7 @@ init(){
 
     let body:SKPhysicsBody = SKPhysicsBody(texture: texture, alphaThreshold: 0, size: texture.size() )
 
+    
     self.physicsBody = body
     self.physicsBody?.allowsRotation = false
     self.physicsBody?.isDynamic = true

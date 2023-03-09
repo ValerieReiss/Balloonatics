@@ -1,4 +1,4 @@
-//
+
 //  EnemyNode.swift
 //  Balloonatics
 //
@@ -21,7 +21,7 @@ class EnemyNode: SKSpriteNode {
         physicsBody?.collisionBitMask = CollisionType.player.rawValue
         physicsBody?.contactTestBitMask = CollisionType.player.rawValue
         //name = "enemy"
-        position = CGPoint(x: startPosition.x + xOffset, y: startPosition.y)
+        position = CGPoint(x: 844 + xOffset, y: startPosition.y)
         configureMovement(moveStraight)
     }
     

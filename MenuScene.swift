@@ -134,7 +134,7 @@ class MenuScene: SKScene {
                         self.view?.presentScene(GameScene(size: self.size),
                        transition: .crossFade(withDuration: 2))
                     } else if nodeTouched.name == "button9" {
-                        self.view?.presentScene(GameScene(size: self.size),
+                        self.view?.presentScene(GameScene9(size: self.size),
                        transition: .crossFade(withDuration: 2))
                     } else if nodeTouched.name == "button10" {
                         self.view?.presentScene(GameScene10(size: self.size),
@@ -147,4 +147,3 @@ class MenuScene: SKScene {
            }
     }
 }
-

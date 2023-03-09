@@ -2,7 +2,7 @@
 //  GameScene.swift
 //  Balloonatics
 //
-//  Created by Valerie on 26.02.23.
+//  Created by Valerie on 08.03.23.
 //
 
 import CoreMotion
@@ -68,7 +68,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.physicsBody = SKPhysicsBody(texture: player.texture!, size: player.texture!.size())
         player.physicsBody?.categoryBitMask = CollisionType.player.rawValue
         player.physicsBody?.collisionBitMask = CollisionType.enemy.rawValue
-        player.physicsBody?.contactTestBitMask = CollisionType.enemy.rawValue 
+        player.physicsBody?.contactTestBitMask = CollisionType.enemy.rawValue
         player.physicsBody?.isDynamic = false
         
         motionManager.startAccelerometerUpdates()
@@ -119,7 +119,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("obstacle created")
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    /*override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         for touch in (touches ) {
             let location = touch.location(in: self)
@@ -141,7 +141,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                }
            }
         
-    }
+    }*/
     
     func didBegin(_ contact: SKPhysicsContact){
         guard let nodeA = contact.bodyA.node else {return}
