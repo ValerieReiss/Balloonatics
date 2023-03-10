@@ -15,12 +15,11 @@ class EnemyNode: SKSpriteNode {
         
         let texture = SKTexture(imageNamed: type.name)
         super.init(texture: texture, color: .white, size: texture.size())
-        
+        name = "enemy"
         physicsBody = SKPhysicsBody(texture: texture, size: texture.size())
-        physicsBody?.categoryBitMask = CollisionType.enemy.rawValue
-        physicsBody?.collisionBitMask = CollisionType.player.rawValue
-        physicsBody?.contactTestBitMask = CollisionType.player.rawValue
-        //name = "enemy"
+        self.physicsBody?.categoryBitMask = CollisionType.enemy.rawValue
+        self.physicsBody?.collisionBitMask = CollisionType.player.rawValue
+        self.physicsBody?.contactTestBitMask = CollisionType.player.rawValue
         position = CGPoint(x: 844 + xOffset, y: startPosition.y)
         configureMovement(moveStraight)
     }

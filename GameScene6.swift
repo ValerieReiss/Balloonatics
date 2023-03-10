@@ -9,6 +9,12 @@ import CoreMotion
 import SpriteKit
 import GameplayKit
 
+/*enum CollisionType: UInt32 {
+    case player = 1
+    case enemy = 2
+    case star = 4
+}*/
+
 class GameScene6: SKScene, SKPhysicsContactDelegate {
     
     class func newGameScene() -> GameScene6 {
@@ -21,8 +27,12 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
     }
     
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
+    
     var scoreLabel: SKLabelNode!
-    var playerShields = 10
+    var starLabel: SKLabelNode!
+    var txtGameOver: SKLabelNode!
+    var playerHearts = 10
+    var playerStars = 0
 
     var lastUpdateTime:TimeInterval = 0
     var dt:TimeInterval = 0
@@ -36,17 +46,16 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
-        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky2")
+        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky6")
         backgroundImage.anchorPoint = CGPointMake(0.5, 0.5)
         backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
         backgroundImage.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
         backgroundImage.zPosition = -20
         self.addChild(backgroundImage)
         
-        physicsWorld.contactDelegate = self
-        
         navibar()
-    
+        
+        physicsWorld.contactDelegate = self
         scene?.physicsWorld.gravity = CGVectorMake(0, 0)
         
         let maxAspectRatio:CGFloat = 16.0/9.0
@@ -61,7 +70,6 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         
         player.position = currentPlayerPosition
         self.addChild(player)
-    
     }
     
     func createObstacles() {
@@ -75,7 +83,12 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
                 addChild(enemy)
                 break
             }
-        print("obstacle created")
+    }
+    
+    func createStars(){
+        let startPosition = Int.random(in: 50..<300)
+        let star = StarNode(startPosition: CGPoint(x: 844, y: startPosition), moveStraight: true)
+        addChild(star)
     }
     
     func didBegin(_ contact: SKPhysicsContact){
@@ -86,35 +99,54 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         let firstNode = sortedNodes[0]
         let secondNode = sortedNodes[1]
         
-        if secondNode.name == "player"{
+        if secondNode.name == "enemy"{
+            print("enemy")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = firstNode.position
-                addChild(explosion)
-            }
-            playerShields -= 1
-            if playerShields == 0 {
-                gameOver()
-                secondNode.removeFromParent()
-            }
-            firstNode.removeFromParent()
+                addChild(explosion)}
+            secondNode.removeFromParent()
+            playerHearts -= 1
+            if playerHearts == -1 {gameOver()}
+        }
+        else if secondNode is StarNode{
+            print("starnode")
+            secondNode.removeFromParent()
+            playerStars += 1
+            if playerStars == 10 {won()}
+        }
+        else {
+            print("keine ahnung")
+        }
+            
+        /*
         } else if let enemy = firstNode as? EnemyNode{
+            print("enemynode")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = enemy.position
                 addChild(explosion)}
-                enemy.removeFromParent()
+            enemy.removeFromParent()
+        } else if let star = firstNode as? StarNode{
+            print("starnode")
+            if let explosion = SKEmitterNode(fileNamed: "Explosion"){
+                explosion.position = star.position
+                addChild(explosion)}
+            star.removeFromParent()
+            playerStars += 1
+            if playerStars == 10 {won()}
         } else {
+            print("else keine ahnung wer")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = secondNode.position
                 addChild(explosion)}
             nodeB.removeFromParent()
-            playerShields -= 1
-            if playerShields == 0 {
-                gameOver()
+            playerHearts -= 1
+            if playerHearts == -1 {
+            gameOver()
             }
-        }
+        }*/
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?){
         for touch: AnyObject in touches {
             currentTouchPosition = touch.location(in:self)
         }
@@ -123,21 +155,33 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         player.movePlayerBy(dxVectorValue: dxVectorValue, dyVectorValue: dyVectorValue, duration: dt)
     }
 
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
         player.removeAllActions()
         player.stopMoving()
     }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         print("touch")
         for touch: AnyObject in touches {
             beginningTouchPosition = touch.location(in:self)
             currentTouchPosition = beginningTouchPosition
         }
+        guard var touch = touches.first else {return}
+        touch = (touches.first as UITouch?)!
+        let location = touch.location(in: self)
+        let node = self.atPoint(location)
+        if node.name == "returnToMenu"{
+                    print ("One Object touched")
+                    self.view?.presentScene(MenuScene(size: self.size),
+                    transition: .crossFade(withDuration: 2))
+                } else if node.name != "returnToMenu" {
+                    print ("fail")
+                }
     }
 
     override func update(_ currentTime: CFTimeInterval) {
-        scoreLabel.text = "\(playerShields)"
+        scoreLabel.text = "\(playerHearts)"
+        starLabel.text = "\(playerStars)"
         currentPlayerPosition = player.position
         if lastUpdateTime > 0 {dt = currentTime - lastUpdateTime}
         else {dt = 0}
@@ -146,13 +190,19 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         
         let activeEnemies = children.compactMap { $0 as? EnemyNode}
         if activeEnemies.isEmpty {
-            if playerShields != 0  {
-                //let wait = SKAction.wait(forDuration: 0.05, withRange: 0.05)
-                //SKAction.repeat(wait, count: 1)
+            if playerHearts != 0  {
                 createObstacles()
-                
-            } else if playerShields == 0 {
+            } else if playerHearts == 0 {
                     gameOver()
+            }
+        }
+       
+        let activeStars = children.compactMap { $0 as? StarNode}
+        if activeStars.isEmpty {
+            if playerStars != 10  {
+                createStars()
+            } else if playerStars == 10 {
+                    won()
             }
         }
         
@@ -167,16 +217,27 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
     }
     
     func navibar(){
-        let scoreImage = SKSpriteNode(imageNamed: "heart1")
-        scoreImage.position = CGPoint(x: CGRectGetMidX(self.frame)-300, y: CGRectGetMidY(self.frame)+170)
-        scoreImage.zPosition = 2
-        addChild(scoreImage)
+        let naviHeart = SKSpriteNode(imageNamed: "heart1")
+        naviHeart.position = CGPoint(x: CGRectGetMidX(self.frame)-300, y: CGRectGetMidY(self.frame)+170)
+        naviHeart.zPosition = 2
+        addChild(naviHeart)
         
         scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
         scoreLabel.position = CGPoint(x: CGRectGetMidX(self.frame)-250, y: CGRectGetMidY(self.frame)+160)
         scoreLabel.zPosition = 2
         addChild(scoreLabel)
-        scoreLabel.text = "\(playerShields)"
+        scoreLabel.text = "\(playerHearts)"
+        
+        let naviStar = SKSpriteNode(imageNamed: "star1")
+        naviStar.position = CGPoint(x: CGRectGetMidX(self.frame)-200, y: CGRectGetMidY(self.frame)+170)
+        naviStar.zPosition = 2
+        addChild(naviStar)
+        
+        starLabel = SKLabelNode(fontNamed: "Chalkduster")
+        starLabel.position = CGPoint(x: CGRectGetMidX(self.frame)-150, y: CGRectGetMidY(self.frame)+160)
+        starLabel.zPosition = 2
+        addChild(starLabel)
+        starLabel.text = "\(playerStars)"
     }
     
     func gameOver() {
@@ -185,22 +246,38 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         player.stopMoving()
         player.removeFromParent()
         
-        let jo2 = SKSpriteNode(imageNamed: "JO2.png")
-        jo2.setScale(1)
-        jo2.zPosition = 4
-        jo2.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
-        self.addChild(jo2)
+        let jo = SKSpriteNode(imageNamed: "JO2.png")
+        jo.name = "returnToMenu"
+        jo.setScale(1)
+        jo.zPosition = 4
+        jo.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
+        self.addChild(jo)
         
-        let rotateAction = SKAction.sequence ([
-            SKAction.rotate(toAngle: 0.2, duration: 0.4),
-            SKAction.rotate(toAngle: -0.2, duration: 0.4)])
-        jo2.run(SKAction.repeatForever(rotateAction))
+        txtGameOver = SKLabelNode(fontNamed: "Chalkduster")
+        txtGameOver.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame)-100)
+        txtGameOver.zPosition = 2
+        addChild(txtGameOver)
+        txtGameOver.text = "GameOver"
+    }
+    
+    func won() {
         
-        let gomenuButton = SKSpriteNode(imageNamed: "menuClown.jpg")
-        gomenuButton.name = "returnToMenu"
-        gomenuButton.position = CGPoint(x: 800, y: 50)
-        gomenuButton.size = CGSize(width: 70, height: 100)
-        gomenuButton.zPosition = 4
-        self.addChild(gomenuButton)
+        player.removeAllActions()
+        player.stopMoving()
+        player.removeFromParent()
+        
+        let jo = SKSpriteNode(imageNamed: "JO4.png")
+        jo.name = "returnToMenu"
+        jo.setScale(1)
+        jo.zPosition = 4
+        jo.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
+        self.addChild(jo)
+        
+        txtGameOver = SKLabelNode(fontNamed: "Chalkduster")
+        txtGameOver.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame)-100)
+        txtGameOver.zPosition = 2
+        addChild(txtGameOver)
+        txtGameOver.text = "**Congratulations**"
+        
     }
 }

@@ -18,7 +18,7 @@ class GameScene9: SKScene, SKPhysicsContactDelegate {
         scene.scaleMode = .aspectFill
         return scene
     }
-    
+    /*
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
     var scoreLabel: SKLabelNode!
     var playerShields = 10
@@ -201,5 +201,5 @@ class GameScene9: SKScene, SKPhysicsContactDelegate {
         gomenuButton.size = CGSize(width: 70, height: 100)
         gomenuButton.zPosition = 4
         self.addChild(gomenuButton)
-    }
+    }*/
 }

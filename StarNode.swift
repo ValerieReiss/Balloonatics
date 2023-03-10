@@ -9,20 +9,20 @@ import SpriteKit
 
 class StarNode: SKSpriteNode {
     init(startPosition: CGPoint, moveStraight: Bool){
-        
-        var startPosition = Int.random(in: 50..<300)
+
+        let startPosition = Int.random(in: 50..<300)
         let texture = SKTexture(imageNamed: "Star")
 
         super.init(texture: texture, color: UIColor.clear, size: texture.size())
-
+        
         self.setScale(2)
         self.zPosition = 4
-        name = "star"
-        physicsBody = SKPhysicsBody(texture: texture, size: texture.size())
-        //physicsBody?.categoryBitMask = CollisionType.star.rawValue
-        physicsBody?.collisionBitMask = CollisionType.player.rawValue
-        physicsBody?.contactTestBitMask = CollisionType.player.rawValue
-        position = CGPoint(x: 844, y: startPosition)
+        self.name = "star"
+        self.physicsBody = SKPhysicsBody(texture: texture, size: texture.size())
+        self.physicsBody?.categoryBitMask = CollisionType.star.rawValue
+        self.physicsBody?.collisionBitMask = CollisionType.player.rawValue
+        self.physicsBody?.contactTestBitMask = CollisionType.player.rawValue
+        self.position = CGPoint(x: 844, y: startPosition)
         configureMovement(moveStraight)
     }
     

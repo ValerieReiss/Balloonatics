@@ -1,14 +1,14 @@
 [
     {
          "name": "enemy1",
-         "speed": 70,
+         "speed": 90,
     },
     {
         "name": "enemy2",
-        "speed": 75,
+        "speed": 95,
     },
     {
         "name": "enemy3",
-        "speed": 80,
+        "speed": 40,
     }
 ]

@@ -9,6 +9,12 @@ import CoreMotion
 import SpriteKit
 import GameplayKit
 
+enum CollisionType: UInt32 {
+    case player = 1
+    case enemy = 2
+    case star = 4
+}
+
 class GameScene2: SKScene, SKPhysicsContactDelegate {
     
     class func newGameScene() -> GameScene2 {
@@ -21,6 +27,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     }
     
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
+    
     var scoreLabel: SKLabelNode!
     var starLabel: SKLabelNode!
     var txtGameOver: SKLabelNode!
@@ -46,10 +53,9 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         backgroundImage.zPosition = -20
         self.addChild(backgroundImage)
         
-        physicsWorld.contactDelegate = self
-        
         navibar()
-    
+        
+        physicsWorld.contactDelegate = self
         scene?.physicsWorld.gravity = CGVectorMake(0, 0)
         
         let maxAspectRatio:CGFloat = 16.0/9.0
@@ -64,7 +70,6 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         
         player.position = currentPlayerPosition
         self.addChild(player)
-    
     }
     
     func createObstacles() {
@@ -81,7 +86,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     }
     
     func createStars(){
-        var startPosition = Int.random(in: 50..<300)
+        let startPosition = Int.random(in: 50..<300)
         let star = StarNode(startPosition: CGPoint(x: 844, y: startPosition), moveStraight: true)
         addChild(star)
     }
@@ -94,43 +99,54 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         let firstNode = sortedNodes[0]
         let secondNode = sortedNodes[1]
         
-        /*if firstNode == "star" {
-            playerStars += 1
-            if playerStars == 10 {won()}
-        } else if secondNode == "star" {
-            playerStars += 1
-            if playerStars == 10 {won()}
-        }*/
-        
-        if secondNode.name == "player"{
+        if secondNode.name == "enemy"{
+            print("enemy")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = firstNode.position
-                addChild(explosion)
-            }
+                addChild(explosion)}
+            secondNode.removeFromParent()
             playerHearts -= 1
-            if playerHearts == -1 {
-                gameOver()
-                secondNode.removeFromParent()
-            }
-            firstNode.removeFromParent()
+            if playerHearts == -1 {gameOver()}
+        }
+        else if secondNode is StarNode{
+            print("starnode")
+            secondNode.removeFromParent()
+            playerStars += 1
+            if playerStars == 10 {won()}
+        }
+        else {
+            print("keine ahnung")
+        }
+            
+        /*
         } else if let enemy = firstNode as? EnemyNode{
+            print("enemynode")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = enemy.position
                 addChild(explosion)}
-                enemy.removeFromParent()
+            enemy.removeFromParent()
+        } else if let star = firstNode as? StarNode{
+            print("starnode")
+            if let explosion = SKEmitterNode(fileNamed: "Explosion"){
+                explosion.position = star.position
+                addChild(explosion)}
+            star.removeFromParent()
+            playerStars += 1
+            if playerStars == 10 {won()}
         } else {
+            print("else keine ahnung wer")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = secondNode.position
                 addChild(explosion)}
             nodeB.removeFromParent()
             playerHearts -= 1
             if playerHearts == -1 {
-                gameOver()
+            gameOver()
             }
-        }
+        }*/
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?){
         for touch: AnyObject in touches {
             currentTouchPosition = touch.location(in:self)
         }
@@ -139,12 +155,12 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         player.movePlayerBy(dxVectorValue: dxVectorValue, dyVectorValue: dyVectorValue, duration: dt)
     }
 
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
         player.removeAllActions()
         player.stopMoving()
     }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         print("touch")
         for touch: AnyObject in touches {
             beginningTouchPosition = touch.location(in:self)
@@ -161,11 +177,11 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
                 } else if node.name != "returnToMenu" {
                     print ("fail")
                 }
-
     }
 
     override func update(_ currentTime: CFTimeInterval) {
         scoreLabel.text = "\(playerHearts)"
+        starLabel.text = "\(playerStars)"
         currentPlayerPosition = player.position
         if lastUpdateTime > 0 {dt = currentTime - lastUpdateTime}
         else {dt = 0}
@@ -180,7 +196,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
                     gameOver()
             }
         }
-        
+       
         let activeStars = children.compactMap { $0 as? StarNode}
         if activeStars.isEmpty {
             if playerStars != 10  {
