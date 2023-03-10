@@ -127,13 +127,31 @@ class MenuScene: SKScene {
                     if nodeTouched.name == "button12" {
                         self.view?.presentScene(GameScene12(size: self.size),
                        transition: .crossFade(withDuration: 2))
-                    } else if nodeTouched.name == "button5" {
+                    } else if nodeTouched.name == "button1" {
                         self.view?.presentScene(GameScene(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    } else if nodeTouched.name == "button2" {
+                        self.view?.presentScene(GameScene2(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    } else if nodeTouched.name == "button3" {
+                        self.view?.presentScene(GameScene3(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    } else if nodeTouched.name == "button4" {
+                        self.view?.presentScene(GameScene4(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    } else if nodeTouched.name == "button5" {
+                        self.view?.presentScene(GameScene5(size: self.size),
                        transition: .crossFade(withDuration: 2))
                     } else if nodeTouched.name == "button6" {
-                        self.view?.presentScene(GameScene(size: self.size),
+                        self.view?.presentScene(GameScene6(size: self.size),
                        transition: .crossFade(withDuration: 2))
-                    } else if nodeTouched.name == "button9" {
+                    } else if nodeTouched.name == "button7" {
+                        self.view?.presentScene(GameScene7(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    } else if nodeTouched.name == "button8" {
+                        self.view?.presentScene(GameScene8(size: self.size),
+                       transition: .crossFade(withDuration: 2))
+                    }else if nodeTouched.name == "button9" {
                         self.view?.presentScene(GameScene9(size: self.size),
                        transition: .crossFade(withDuration: 2))
                     } else if nodeTouched.name == "button10" {

@@ -1,19 +1,19 @@
 //
-//  GameScene11.swift
+//  GameScene2.swift
 //  Balloonatics
 //
-//  Created by Valerie on 26.02.23.
+//  Created by Valerie on 10.03.23.
 //
 
 import CoreMotion
 import SpriteKit
 import GameplayKit
 
-class GameScene11: SKScene, SKPhysicsContactDelegate {
+class GameScene2: SKScene, SKPhysicsContactDelegate {
     
-    class func newGameScene() -> GameScene11 {
-        guard let scene = SKScene(fileNamed: "GameScene11") as? GameScene11 else {
-            print("Failed to load GameScene11.sks")
+    class func newGameScene() -> GameScene2 {
+        guard let scene = SKScene(fileNamed: "GameScene2") as? GameScene2 else {
+            print("Failed to load GameScene2.sks")
             abort()
         }
         scene.scaleMode = .aspectFill
@@ -39,7 +39,7 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
-        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky11")
+        let backgroundImage = SKSpriteNode(imageNamed: "backgroundSky2")
         backgroundImage.anchorPoint = CGPointMake(0.5, 0.5)
         backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
         backgroundImage.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
@@ -78,7 +78,12 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
                 addChild(enemy)
                 break
             }
-        print("obstacle created")
+    }
+    
+    func createStars(){
+        var startPosition = Int.random(in: 50..<300)
+        let star = StarNode(startPosition: CGPoint(x: 844, y: startPosition), moveStraight: true)
+        addChild(star)
     }
     
     func didBegin(_ contact: SKPhysicsContact){
@@ -88,6 +93,14 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         let sortedNodes = [nodeA, nodeB].sorted {$0.name ?? "" < $1.name ?? ""}
         let firstNode = sortedNodes[0]
         let secondNode = sortedNodes[1]
+        
+        /*if firstNode == "star" {
+            playerStars += 1
+            if playerStars == 10 {won()}
+        } else if secondNode == "star" {
+            playerStars += 1
+            if playerStars == 10 {won()}
+        }*/
         
         if secondNode.name == "player"{
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
@@ -162,12 +175,18 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         let activeEnemies = children.compactMap { $0 as? EnemyNode}
         if activeEnemies.isEmpty {
             if playerHearts != 0  {
-                //let wait = SKAction.wait(forDuration: 0.05, withRange: 0.05)
-                //SKAction.repeat(wait, count: 1)
                 createObstacles()
-                
             } else if playerHearts == 0 {
                     gameOver()
+            }
+        }
+        
+        let activeStars = children.compactMap { $0 as? StarNode}
+        if activeStars.isEmpty {
+            if playerStars != 10  {
+                createStars()
+            } else if playerStars == 10 {
+                    won()
             }
         }
         
