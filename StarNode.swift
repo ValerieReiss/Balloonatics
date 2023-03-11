@@ -11,11 +11,11 @@ class StarNode: SKSpriteNode {
     init(startPosition: CGPoint, moveStraight: Bool){
 
         let startPosition = Int.random(in: 50..<300)
-        let texture = SKTexture(imageNamed: "Star")
+        let texture = SKTexture(imageNamed: "objectStar2")
 
         super.init(texture: texture, color: UIColor.clear, size: texture.size())
         
-        self.setScale(2)
+        self.setScale(1)
         self.zPosition = 4
         self.name = "star"
         self.physicsBody = SKPhysicsBody(texture: texture, size: texture.size())
@@ -35,7 +35,7 @@ class StarNode: SKSpriteNode {
         path.move(to: .zero)
         path.addLine(to: CGPoint(x: -10000, y: 0))
         
-        let movement = SKAction.follow(path.cgPath, asOffset: true, orientToPath: true, speed: 70)
+        let movement = SKAction.follow(path.cgPath, asOffset: true, orientToPath: true, speed: 150)
         let sequence = SKAction.sequence([movement, .removeFromParent()])
         run (sequence)
     }

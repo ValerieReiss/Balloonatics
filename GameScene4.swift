@@ -8,8 +8,8 @@
 import CoreMotion
 import SpriteKit
 import GameplayKit
-
-/*enum CollisionType: UInt32 {
+/*
+enum CollisionType: UInt32 {
     case player = 1
     case enemy = 2
     case star = 4
@@ -18,7 +18,7 @@ import GameplayKit
 class GameScene4: SKScene, SKPhysicsContactDelegate {
     
     class func newGameScene() -> GameScene4 {
-        guard let scene = SKScene(fileNamed: "GameScene3") as? GameScene4 else {
+        guard let scene = SKScene(fileNamed: "GameScene4") as? GameScene4 else {
             print("Failed to load GameScene4.sks")
             abort()
         }
@@ -73,7 +73,7 @@ class GameScene4: SKScene, SKPhysicsContactDelegate {
     }
     
     func createObstacles() {
-        let enemyType = Int.random(in: 0..<3)
+        let enemyType = Int.random(in: 0..<30)
         let enemyStartY = Int.random(in: 50..<300)
         let positions = Array(stride(from: -1000, through:1000, by: 2000))
 
@@ -102,14 +102,16 @@ class GameScene4: SKScene, SKPhysicsContactDelegate {
         if secondNode.name == "enemy"{
             print("enemy")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
-                explosion.position = firstNode.position
+                explosion.position = secondNode.position
                 addChild(explosion)}
             secondNode.removeFromParent()
             playerHearts -= 1
             if playerHearts == -1 {gameOver()}
         }
         else if secondNode is StarNode{
-            print("starnode")
+            if let sparkleStars = SKEmitterNode(fileNamed: "particleStars"){
+                sparkleStars.position = secondNode.position
+                addChild(sparkleStars)}
             secondNode.removeFromParent()
             playerStars += 1
             if playerStars == 10 {won()}
@@ -191,6 +193,7 @@ class GameScene4: SKScene, SKPhysicsContactDelegate {
         let activeEnemies = children.compactMap { $0 as? EnemyNode}
         if activeEnemies.isEmpty {
             if playerHearts != 0  {
+                createObstacles()
                 createObstacles()
             } else if playerHearts == 0 {
                     gameOver()
@@ -279,5 +282,8 @@ class GameScene4: SKScene, SKPhysicsContactDelegate {
         addChild(txtGameOver)
         txtGameOver.text = "**Congratulations**"
         
+        if let bubbles = SKEmitterNode(fileNamed: "particleStars"){
+            bubbles.position = jo.position
+            addChild(bubbles)}
     }
 }

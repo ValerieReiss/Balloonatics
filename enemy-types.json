@@ -1,14 +1,122 @@
 [
     {
-         "name": "enemy1",
+         "name": "objectBalloon0",
+         "speed": 100,
+    },
+    {
+         "name": "objectBalloon1",
          "speed": 90,
     },
     {
-        "name": "enemy2",
+        "name": "objectBalloon2",
         "speed": 95,
     },
     {
-        "name": "enemy3",
-        "speed": 40,
+        "name": "objectBalloon3",
+        "speed": 120,
+    },
+    {
+        "name": "objectBalloonHelp",
+        "speed": 95,
+    },
+    {
+        "name": "objectLeave1",
+        "speed": 70,
+    },
+    {
+        "name": "objectLeave2",
+        "speed": 120,
+    },
+    {
+        "name": "objectLeave3",
+        "speed": 90,
+    },
+    {
+        "name": "objectSnowflake",
+        "speed": 90,
+    },
+    {
+        "name": "objectBird1",
+        "speed": 120,
+    },
+    {
+        "name": "objectBird2",
+        "speed": 100,
+    },
+    {
+        "name": "objectBird3",
+        "speed": 100,
+    },
+    {
+        "name": "objectBird4",
+        "speed": 100,
+    },
+    {
+        "name": "objectBird5",
+        "speed": 120,
+    },
+    {
+        "name": "objectBird6",
+        "speed": 100,
+    },
+    {
+        "name": "objectBird7",
+        "speed": 100,
+    },
+    {
+        "name": "objectCloud1",
+        "speed": 90,
+    },
+    {
+        "name": "objectCloud2",
+        "speed": 60,
+    },
+    {
+        "name": "objectCloud3",
+        "speed": 90,
+    },
+    {
+        "name": "objectCloud4",
+        "speed": 100,
+    },
+    {
+        "name": "objectCloud5",
+        "speed": 90,
+    },
+    {
+        "name": "objectCloud6",
+        "speed": 90,
+    },
+    {
+        "name": "objectCloud7",
+        "speed": 90,
+    },
+    {
+        "name": "objectCloud8",
+        "speed": 60,
+    },
+    {
+        "name": "objectCloud9",
+        "speed": 90,
+    },
+    {
+        "name": "objectElf",
+        "speed": 95,
+    },
+    {
+        "name": "objectPlane1",
+        "speed": 60,
+    },
+    {
+        "name": "objectPlane2",
+        "speed": 90,
+    },
+    {
+        "name": "objectPlane3",
+        "speed": 90,
+    },
+    {
+        "name": "objectPlane4",
+        "speed": 50,
     }
 ]

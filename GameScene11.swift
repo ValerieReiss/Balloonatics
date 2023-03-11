@@ -8,6 +8,12 @@
 import CoreMotion
 import SpriteKit
 import GameplayKit
+/*
+enum CollisionType: UInt32 {
+    case player = 1
+    case enemy = 2
+    case star = 4
+}*/
 
 class GameScene11: SKScene, SKPhysicsContactDelegate {
     
@@ -21,6 +27,7 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
     }
     
     let enemyTypes = Bundle.main.decode([EnemyType].self, from: "enemy-types.json")
+    
     var scoreLabel: SKLabelNode!
     var starLabel: SKLabelNode!
     var txtGameOver: SKLabelNode!
@@ -46,10 +53,9 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         backgroundImage.zPosition = -20
         self.addChild(backgroundImage)
         
-        physicsWorld.contactDelegate = self
-        
         navibar()
-    
+        
+        physicsWorld.contactDelegate = self
         scene?.physicsWorld.gravity = CGVectorMake(0, 0)
         
         let maxAspectRatio:CGFloat = 16.0/9.0
@@ -64,11 +70,10 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         
         player.position = currentPlayerPosition
         self.addChild(player)
-    
     }
     
     func createObstacles() {
-        let enemyType = Int.random(in: 0..<3)
+        let enemyType = Int.random(in: 0..<30)
         let enemyStartY = Int.random(in: 50..<300)
         let positions = Array(stride(from: -1000, through:1000, by: 2000))
 
@@ -78,7 +83,12 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
                 addChild(enemy)
                 break
             }
-        print("obstacle created")
+    }
+    
+    func createStars(){
+        let startPosition = Int.random(in: 50..<300)
+        let star = StarNode(startPosition: CGPoint(x: 844, y: startPosition), moveStraight: true)
+        addChild(star)
     }
     
     func didBegin(_ contact: SKPhysicsContact){
@@ -89,35 +99,30 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         let firstNode = sortedNodes[0]
         let secondNode = sortedNodes[1]
         
-        if secondNode.name == "player"{
-            if let explosion = SKEmitterNode(fileNamed: "Explosion"){
-                explosion.position = firstNode.position
-                addChild(explosion)
-            }
-            playerHearts -= 1
-            if playerHearts == -1 {
-                gameOver()
-                secondNode.removeFromParent()
-            }
-            firstNode.removeFromParent()
-        } else if let enemy = firstNode as? EnemyNode{
-            if let explosion = SKEmitterNode(fileNamed: "Explosion"){
-                explosion.position = enemy.position
-                addChild(explosion)}
-                enemy.removeFromParent()
-        } else {
+        if secondNode.name == "enemy"{
+            print("enemy")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
                 explosion.position = secondNode.position
                 addChild(explosion)}
-            nodeB.removeFromParent()
+            secondNode.removeFromParent()
             playerHearts -= 1
-            if playerHearts == -1 {
-                gameOver()
-            }
+            if playerHearts == -1 {gameOver()}
         }
+        else if secondNode is StarNode{
+            if let sparkleStars = SKEmitterNode(fileNamed: "particleStars"){
+                sparkleStars.position = secondNode.position
+                addChild(sparkleStars)}
+            secondNode.removeFromParent()
+            playerStars += 1
+            if playerStars == 10 {won()}
+        }
+        else {
+            print("keine ahnung")
+        }
+            
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?){
         for touch: AnyObject in touches {
             currentTouchPosition = touch.location(in:self)
         }
@@ -126,12 +131,12 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         player.movePlayerBy(dxVectorValue: dxVectorValue, dyVectorValue: dyVectorValue, duration: dt)
     }
 
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
         player.removeAllActions()
         player.stopMoving()
     }
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         print("touch")
         for touch: AnyObject in touches {
             beginningTouchPosition = touch.location(in:self)
@@ -148,11 +153,11 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
                 } else if node.name != "returnToMenu" {
                     print ("fail")
                 }
-
     }
 
     override func update(_ currentTime: CFTimeInterval) {
         scoreLabel.text = "\(playerHearts)"
+        starLabel.text = "\(playerStars)"
         currentPlayerPosition = player.position
         if lastUpdateTime > 0 {dt = currentTime - lastUpdateTime}
         else {dt = 0}
@@ -162,12 +167,19 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         let activeEnemies = children.compactMap { $0 as? EnemyNode}
         if activeEnemies.isEmpty {
             if playerHearts != 0  {
-                //let wait = SKAction.wait(forDuration: 0.05, withRange: 0.05)
-                //SKAction.repeat(wait, count: 1)
                 createObstacles()
-                
+                createObstacles()
             } else if playerHearts == 0 {
                     gameOver()
+            }
+        }
+       
+        let activeStars = children.compactMap { $0 as? StarNode}
+        if activeStars.isEmpty {
+            if playerStars != 10  {
+                createStars()
+            } else if playerStars == 10 {
+                    won()
             }
         }
         
@@ -244,5 +256,8 @@ class GameScene11: SKScene, SKPhysicsContactDelegate {
         addChild(txtGameOver)
         txtGameOver.text = "**Congratulations**"
         
+        if let bubbles = SKEmitterNode(fileNamed: "particleStars"){
+            bubbles.position = jo.position
+            addChild(bubbles)}
     }
 }

@@ -8,8 +8,8 @@
 import CoreMotion
 import SpriteKit
 import GameplayKit
-
-/*enum CollisionType: UInt32 {
+/*
+enum CollisionType: UInt32 {
     case player = 1
     case enemy = 2
     case star = 4
@@ -73,7 +73,7 @@ class GameScene7: SKScene, SKPhysicsContactDelegate {
     }
     
     func createObstacles() {
-        let enemyType = Int.random(in: 0..<3)
+        let enemyType = Int.random(in: 0..<30)
         let enemyStartY = Int.random(in: 50..<300)
         let positions = Array(stride(from: -1000, through:1000, by: 2000))
 
@@ -102,14 +102,16 @@ class GameScene7: SKScene, SKPhysicsContactDelegate {
         if secondNode.name == "enemy"{
             print("enemy")
             if let explosion = SKEmitterNode(fileNamed: "Explosion"){
-                explosion.position = firstNode.position
+                explosion.position = secondNode.position
                 addChild(explosion)}
             secondNode.removeFromParent()
             playerHearts -= 1
             if playerHearts == -1 {gameOver()}
         }
         else if secondNode is StarNode{
-            print("starnode")
+            if let sparkleStars = SKEmitterNode(fileNamed: "particleStars"){
+                sparkleStars.position = secondNode.position
+                addChild(sparkleStars)}
             secondNode.removeFromParent()
             playerStars += 1
             if playerStars == 10 {won()}
@@ -117,33 +119,7 @@ class GameScene7: SKScene, SKPhysicsContactDelegate {
         else {
             print("keine ahnung")
         }
-            
-        /*
-        } else if let enemy = firstNode as? EnemyNode{
-            print("enemynode")
-            if let explosion = SKEmitterNode(fileNamed: "Explosion"){
-                explosion.position = enemy.position
-                addChild(explosion)}
-            enemy.removeFromParent()
-        } else if let star = firstNode as? StarNode{
-            print("starnode")
-            if let explosion = SKEmitterNode(fileNamed: "Explosion"){
-                explosion.position = star.position
-                addChild(explosion)}
-            star.removeFromParent()
-            playerStars += 1
-            if playerStars == 10 {won()}
-        } else {
-            print("else keine ahnung wer")
-            if let explosion = SKEmitterNode(fileNamed: "Explosion"){
-                explosion.position = secondNode.position
-                addChild(explosion)}
-            nodeB.removeFromParent()
-            playerHearts -= 1
-            if playerHearts == -1 {
-            gameOver()
-            }
-        }*/
+      
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?){
@@ -191,6 +167,7 @@ class GameScene7: SKScene, SKPhysicsContactDelegate {
         let activeEnemies = children.compactMap { $0 as? EnemyNode}
         if activeEnemies.isEmpty {
             if playerHearts != 0  {
+                createObstacles()
                 createObstacles()
             } else if playerHearts == 0 {
                     gameOver()
@@ -279,5 +256,8 @@ class GameScene7: SKScene, SKPhysicsContactDelegate {
         addChild(txtGameOver)
         txtGameOver.text = "**Congratulations**"
         
+        if let bubbles = SKEmitterNode(fileNamed: "particleStars"){
+            bubbles.position = jo.position
+            addChild(bubbles)}
     }
 }
