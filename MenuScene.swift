@@ -19,10 +19,12 @@ class MenuScene: SKScene {
         return scene
     }
     
-    let label = SKSpriteNode(imageNamed: "Label")
     let backgroundImage = SKSpriteNode(imageNamed: "backgroundMenu")
+   
     
     override func didMove(to view: SKView) {
+      
+        
         backgroundImage.position = CGPointMake(self.size.width/2, self.size.height/2)
         backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
         backgroundImage.zPosition = -1
@@ -127,41 +129,59 @@ class MenuScene: SKScene {
                     if nodeTouched.name == "button12" {
                         self.view?.presentScene(GameScene12(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button1" {
                         self.view?.presentScene(GameScene(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button2" {
                         self.view?.presentScene(GameScene2(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button3" {
                         self.view?.presentScene(GameScene3(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button4" {
                         self.view?.presentScene(GameScene4(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button5" {
                         self.view?.presentScene(GameScene5(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button6" {
                         self.view?.presentScene(GameScene6(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button7" {
                         self.view?.presentScene(GameScene7(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button8" {
                         self.view?.presentScene(GameScene8(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     }else if nodeTouched.name == "button9" {
                         self.view?.presentScene(GameScene9(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button10" {
                         self.view?.presentScene(GameScene10(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     } else if nodeTouched.name == "button11" {
                         self.view?.presentScene(GameScene11(size: self.size),
                        transition: .crossFade(withDuration: 2))
+                        run("sound-button")
                     }
             
            }
     }
+    
+    func run(_ fileName: String){
+            run(SKAction.playSoundFileNamed(fileName, waitForCompletion: true))
+        
+    }
+    
 }

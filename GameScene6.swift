@@ -34,11 +34,11 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
     var txtGameOver: SKLabelNode!
     var playerHearts = 10
     var playerStars = 0
-
+    
     var lastUpdateTime:TimeInterval = 0
     var dt:TimeInterval = 0
     var player = Player()
-
+    
     var currentTouchPosition: CGPoint  = CGPointZero
     var beginningTouchPosition:CGPoint = CGPointZero
     var currentPlayerPosition: CGPoint = CGPointZero
@@ -52,7 +52,7 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         backgroundImage.size = CGSize(width: self.size.width, height: self.size.height)
         backgroundImage.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
         backgroundImage.zPosition = -20
-        self.addChild(backgroundImage)
+        addChild(backgroundImage)
         
         navibar()
         
@@ -106,21 +106,37 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
                 explosion.position = secondNode.position
                 addChild(explosion)}
             secondNode.removeFromParent()
+            run("sound-bomb")
             playerHearts -= 1
-            if playerHearts == -1 {gameOver()}
+            if playerHearts == -1 {
+                gameOver()}
         }
         else if secondNode is StarNode{
+            print("star Second")
             if let sparkleStars = SKEmitterNode(fileNamed: "particleStars"){
                 sparkleStars.position = secondNode.position
                 addChild(sparkleStars)}
             secondNode.removeFromParent()
+            run("sound-star")
             playerStars += 1
-            if playerStars == 10 {won()}
+            if playerStars == 10 {
+                won()
+            }
+        }else if firstNode is StarNode{
+            print("star First")
+            if let sparkleStars = SKEmitterNode(fileNamed: "particleStars"){
+                sparkleStars.position = firstNode.position
+                addChild(sparkleStars)}
+            firstNode.removeFromParent()
+            run("sound-star")
+            playerStars += 1
+            if playerStars == 10 {
+                won()
+            }
         }
         else {
             print("keine ahnung")
         }
-            
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?){
@@ -148,7 +164,7 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         let location = touch.location(in: self)
         let node = self.atPoint(location)
         if node.name == "returnToMenu"{
-                    print ("One Object touched")
+                    run("sound-button")
                     self.view?.presentScene(MenuScene(size: self.size),
                     transition: .crossFade(withDuration: 2))
                 } else if node.name != "returnToMenu" {
@@ -170,18 +186,14 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
             if playerHearts != 0  {
                 createObstacles()
                 createObstacles()
-            } else if playerHearts == 0 {
-                    gameOver()
-            }
+            } else if playerHearts == 0 {gameOver()}
         }
        
         let activeStars = children.compactMap { $0 as? StarNode}
         if activeStars.isEmpty {
             if playerStars != 10  {
                 createStars()
-            } else if playerStars == 10 {
-                    won()
-            }
+            } else if playerStars == 10 {won()}
         }
         
         for child in children {
@@ -216,10 +228,10 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         starLabel.zPosition = 2
         addChild(starLabel)
         starLabel.text = "\(playerStars)"
+        
     }
     
     func gameOver() {
-        
         player.removeAllActions()
         player.stopMoving()
         player.removeFromParent()
@@ -235,11 +247,15 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         txtGameOver.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame)-100)
         txtGameOver.zPosition = 2
         addChild(txtGameOver)
-        txtGameOver.text = "GameOver"
+        txtGameOver.text = "ººº GameOver ººº"
+        
+        if let bubbles = SKEmitterNode(fileNamed: "particle-Lose"){
+            bubbles.position = jo.position
+            addChild(bubbles)}
     }
     
     func won() {
-        
+        //run("sound-won")
         player.removeAllActions()
         player.stopMoving()
         player.removeFromParent()
@@ -255,11 +271,17 @@ class GameScene6: SKScene, SKPhysicsContactDelegate {
         txtGameOver.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame)-100)
         txtGameOver.zPosition = 2
         addChild(txtGameOver)
-        txtGameOver.text = "**Congratulations**"
+        txtGameOver.text = "*** Congratulations ***"
         
-        if let bubbles = SKEmitterNode(fileNamed: "particleStars"){
+        if let bubbles = SKEmitterNode(fileNamed: "particle-Won"){
             bubbles.position = jo.position
             addChild(bubbles)}
+    }
+    
+    func run(_ fileName: String){
+        // run(SKAction.playSoundFileNamed(fileName, waitForCompletion: true))
+        
+        run(SKAction.repeat((SKAction.playSoundFileNamed(fileName, waitForCompletion: true)), count: 1))
     }
 }
 
