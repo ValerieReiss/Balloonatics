@@ -28,15 +28,18 @@ init(){
     self.yScale = 1
     self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
     self.zPosition = 1
-
+    
+    
     let body:SKPhysicsBody = SKPhysicsBody(texture: texture, alphaThreshold: 0, size: texture.size() )
 
     
     self.physicsBody = body
     self.physicsBody?.allowsRotation = false
+    
     self.physicsBody?.isDynamic = true
     self.physicsBody?.affectedByGravity = true
     self.physicsBody?.categoryBitMask = PhysicsCategory.Player
+    
     
     self.physicsBody?.contactTestBitMask = CollisionType.enemy.rawValue | CollisionType.star.rawValue
 }
@@ -46,8 +49,8 @@ required init?(coder aDecoder: NSCoder) {
 }
 
 func boundsCheckPlayer(playableArea: CGRect){
-    let bottomLeft = CGPoint(x: 0, y: CGRectGetMinY(playableArea))
-    let topRight = CGPoint(x: playableArea.size.width, y: CGRectGetMaxY(playableArea))
+    let bottomLeft = CGPoint(x: 100, y: CGRectGetMinY(playableArea)+100)
+    let topRight = CGPoint(x: playableArea.size.width-100, y: CGRectGetMaxY(playableArea)-100)
 
     if(self.position.x <= bottomLeft.x){
         self.position.x = bottomLeft.x
@@ -74,7 +77,7 @@ func movePlayerBy(dxVectorValue: CGFloat, dyVectorValue: CGFloat, duration: Time
 
     print("move player")
     let moveActionVector = CGVectorMake(dxVectorValue, dyVectorValue)
-    let movePlayerAction = SKAction.applyForce(moveActionVector, duration: 0.5/duration)
+    let movePlayerAction = SKAction.applyForce(moveActionVector, duration: 0.001/duration)
     self.run(movePlayerAction)
 }
 
