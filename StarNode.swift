@@ -8,9 +8,9 @@
 import SpriteKit
 
 class StarNode: SKSpriteNode {
-    init(startPosition: CGPoint, moveStraight: Bool){
+   /* init(startPosition: CGPoint, moveStraight: Bool){
 
-        let startPosition = Int.random(in: 50..<300)
+        //let startPosition = Int.random(in: 50..<300)
         let texture = SKTexture(imageNamed: "objectStar2")
 
         super.init(texture: texture, color: UIColor.clear, size: texture.size())
@@ -38,6 +38,6 @@ class StarNode: SKSpriteNode {
         let movement = SKAction.follow(path.cgPath, asOffset: true, orientToPath: true, speed: 150)
         let sequence = SKAction.sequence([movement, .removeFromParent()])
         run (sequence)
-    }
+    }*/
     
 }

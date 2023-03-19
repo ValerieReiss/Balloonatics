@@ -14,6 +14,10 @@ struct PhysicsCategory {
     static let Player       : UInt32 = 0x1 << 1
     static let Enemy        : UInt32 = 0x1 << 2
     static let Star         : UInt32 = 0x1 << 4
+    static let Balloon      : UInt32 = 0x1 << 8
+    static let create1      : UInt32 = 0x1 << 16
+    static let create2      : UInt32 = 0x1 << 32
+    static let create3      : UInt32 = 0x1 << 64
 }
 
 class Player: SKSpriteNode{
@@ -41,7 +45,7 @@ init(){
     self.physicsBody?.categoryBitMask = PhysicsCategory.Player
     
     
-    self.physicsBody?.contactTestBitMask = CollisionType.enemy.rawValue | CollisionType.star.rawValue
+    self.physicsBody?.contactTestBitMask = CollisionType.enemy.rawValue | CollisionType.star.rawValue | CollisionType.balloon.rawValue | CollisionType.create1.rawValue | CollisionType.create2.rawValue | CollisionType.create3.rawValue
 }
 
 required init?(coder aDecoder: NSCoder) {

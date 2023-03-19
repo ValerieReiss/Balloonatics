@@ -175,7 +175,6 @@ class MenuScene: SKScene {
                        transition: .crossFade(withDuration: 2))
                         run("sound-button")
                     }
-            
            }
     }
     
