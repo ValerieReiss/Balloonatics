@@ -325,6 +325,14 @@ class GameScene4: SKScene, SKPhysicsContactDelegate {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
         player.removeAllActions()
         player.stopMoving()
+        
+        let rotate = SKAction.rotate(toAngle: 0.05, duration:0.05)
+        let rotateback = SKAction.rotate(toAngle: -0.03, duration:0.1)
+        
+        let sequence = SKAction.sequence([rotate, rotateback])
+        let redo = SKAction.repeat(sequence, count: 2)
+        player.run(redo)
+        
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
@@ -375,23 +383,23 @@ class GameScene4: SKScene, SKPhysicsContactDelegate {
     
     func navibar(){
         let naviHeart = SKSpriteNode(imageNamed: "heart1")
-        naviHeart.position = CGPoint(x: CGRectGetMidX(self.frame)-300, y: CGRectGetMidY(self.frame)+170)
+        naviHeart.position = CGPoint(x: self.frame.midX - 300, y: self.frame.midY + 170)
+        naviHeart.setScale(1.5)
         naviHeart.zPosition = 2
         addChild(naviHeart)
-        
         scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
-        scoreLabel.position = CGPoint(x: CGRectGetMidX(self.frame)-250, y: CGRectGetMidY(self.frame)+160)
+        scoreLabel.position = CGPoint(x: self.frame.midX - 260, y: self.frame.midY + 157)
         scoreLabel.zPosition = 2
         addChild(scoreLabel)
         scoreLabel.text = "\(playerHearts)"
-        
+      
         let naviStar = SKSpriteNode(imageNamed: "star1")
-        naviStar.position = CGPoint(x: CGRectGetMidX(self.frame)-200, y: CGRectGetMidY(self.frame)+170)
+        naviStar.position = CGPoint(x: self.frame.midX - 200, y: self.frame.midY + 168)
+        naviStar.setScale(1.5)
         naviStar.zPosition = 2
         addChild(naviStar)
-        
         starLabel = SKLabelNode(fontNamed: "Chalkduster")
-        starLabel.position = CGPoint(x: CGRectGetMidX(self.frame)-150, y: CGRectGetMidY(self.frame)+160)
+        starLabel.position = CGPoint(x: self.frame.midX - 160, y: self.frame.midY + 157)
         starLabel.zPosition = 2
         addChild(starLabel)
         starLabel.text = "\(playerStars)"
@@ -405,9 +413,22 @@ class GameScene4: SKScene, SKPhysicsContactDelegate {
         let jo = SKSpriteNode(imageNamed: "JO2.png")
         jo.name = "returnToMenu"
         jo.setScale(1)
-        jo.zPosition = 4
+        jo.zPosition = 10
         jo.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
-        self.addChild(jo)
+        addChild(jo)
+        
+        let f0 = SKTexture.init(imageNamed: "JO0.png")
+        let f1 = SKTexture.init(imageNamed: "JO1.png")
+        let f2 = SKTexture.init(imageNamed: "JO2.png")
+        let frames0: [SKTexture] = [f0]
+        let frames1: [SKTexture] = [f1, f2]
+        let normal = SKAction.animate(with: frames0, timePerFrame: 0.3)
+        let happy = SKAction.animate(with: frames1, timePerFrame: 0.2)
+        let normalaction = SKAction.repeat(normal, count: 1)
+        let happyaction = SKAction.repeat(happy, count: 4)
+        let sequence = SKAction.sequence([normalaction, happyaction])
+        let redo = SKAction.repeatForever(sequence)
+        jo.run(redo)
         
         txtGameOver = SKLabelNode(fontNamed: "Chalkduster")
         txtGameOver.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame)-100)
@@ -429,9 +450,22 @@ class GameScene4: SKScene, SKPhysicsContactDelegate {
         let jo = SKSpriteNode(imageNamed: "JO4.png")
         jo.name = "returnToMenu"
         jo.setScale(1)
-        jo.zPosition = 4
+        jo.zPosition = 10
         jo.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
-        self.addChild(jo)
+        addChild(jo)
+        
+        let f0 = SKTexture.init(imageNamed: "JO0.png")
+        let f1 = SKTexture.init(imageNamed: "JO3.png")
+        let f2 = SKTexture.init(imageNamed: "JO4.png")
+        let frames0: [SKTexture] = [f0]
+        let frames1: [SKTexture] = [f1, f2]
+        let normal = SKAction.animate(with: frames0, timePerFrame: 0.3)
+        let happy = SKAction.animate(with: frames1, timePerFrame: 0.1)
+        let normalaction = SKAction.repeat(normal, count: 1)
+        let happyaction = SKAction.repeat(happy, count: 4)
+        let sequence = SKAction.sequence([normalaction, happyaction])
+        let redo = SKAction.repeatForever(sequence)
+        jo.run(redo)
         
         txtGameOver = SKLabelNode(fontNamed: "Chalkduster")
         txtGameOver.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame)-100)
